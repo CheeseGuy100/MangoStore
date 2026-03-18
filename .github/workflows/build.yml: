@@ -1,0 +1,44 @@
+# MangoStore Build Pipeline
+# Built by CheeseGuy100 on a Samsung phone 📱
+# With help from Claude (Anthropic) 🤖
+# Yin to MangoLoader's Yang 🥭
+
+name: Build MangoStore
+
+on:
+  push:
+    branches: [ main ]
+  release:
+    types: [ created ]
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.5'
+      - name: Decode Keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > $GITHUB_WORKSPACE/mangostore.jks
+      - name: Build Signed APK
+        working-directory: composeApp
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: gradle assembleRelease -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/mangostore.jks -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD -Pandroid.injected.signing.key.alias=$KEY_ALIAS -Pandroid.injected.signing.key.password=$KEYSTORE_PASSWORD
+      - name: Rename APK
+        run: mv $GITHUB_WORKSPACE/composeApp/build/outputs/apk/release/composeApp-release.apk $GITHUB_WORKSPACE/composeApp/build/outputs/apk/release/MangoStore-${{ github.ref_name }}.apk
+      - name: Upload APK to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: composeApp/build/outputs/apk/release/MangoStore-${{ github.ref_name }}.apk
