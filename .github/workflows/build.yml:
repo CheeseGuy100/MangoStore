@@ -41,4 +41,4 @@ jobs:
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v1
         with:
-          files: composeApp/build/outputs/apk/release/MangoStore-${{ github.ref_name }}.apk 
+          files: composeApp/build/outputs/apk/release/MangoStore-${{ github.ref_name }}.apk
