@@ -1,8 +1,8 @@
 plugins {
-    kotlin("multiplatform")
-    id("com.android.application")
-    id("org.jetbrains.compose")
-    kotlin("plugin.compose")
+    kotlin("multiplatform") version "1.9.22"
+    id("com.android.application") version "8.1.0"
+    id("org.jetbrains.compose") version "1.5.11"
+    kotlin("plugin.compose") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.22"
 }
 
@@ -54,4 +54,4 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-} 
+}
